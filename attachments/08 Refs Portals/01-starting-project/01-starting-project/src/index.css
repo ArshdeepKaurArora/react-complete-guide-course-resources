@@ -101,7 +101,7 @@ header p {
   justify-content: center;
   padding: 2rem;
   margin: 2rem auto;
-  background: linear-gradient(#4df8df, #4df0f8);
+  background: linear-gradient(#05d6b7, #4df0f8);
   color: #221c18;
   box-shadow: 0 2px 8px rgba(35, 34, 34, 0.6);
   border-radius: 6px;
@@ -132,10 +132,11 @@ header p {
 }
 
 .challenge-time {
-  border: 1px solid #46cebe;
+  border: 1px solid #298f83;
   border-radius: 4px;
   padding: 0.25rem 0.5rem;
   margin: 0.5rem;
+  color: #221c18;
 }
 
 .challenge .active {
