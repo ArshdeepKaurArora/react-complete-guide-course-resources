@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Places from './components/Places.jsx';
 import { AVAILABLE_PLACES } from './data.js';
@@ -7,11 +7,14 @@ import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
 import { sortPlacesByDistance } from './loc.js';
 
+const storedPickedPlaces = JSON.parse(localStorage.getItem('pickedItems')) || [];
+
 function App() {
   const modal = useRef();
   const selectedPlace = useRef();
-  const [pickedPlaces, setPickedPlaces] = useState([]);
+  const [pickedPlaces, setPickedPlaces] = useState(storedPickedPlaces);
   const [availablePlaces, setAvailablePlaces] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -25,12 +28,12 @@ function App() {
   }, []);
 
   function handleStartRemovePlace(id) {
-    modal.current.open();
+    setOpenModal(true);
     selectedPlace.current = id;
   }
 
   function handleStopRemovePlace() {
-    modal.current.close();
+    setOpenModal(false);
   }
 
   function handleSelectPlace(id) {
@@ -41,18 +44,30 @@ function App() {
       const place = AVAILABLE_PLACES.find((place) => place.id === id);
       return [place, ...prevPickedPlaces];
     });
+
+    const storedItems = JSON.parse(localStorage.getItem('pickedItems')) || [];
+    storedItems.push(AVAILABLE_PLACES.find((place) => {
+      return place.id === id;
+    }))
+    localStorage.setItem('pickedItems', JSON.stringify(storedItems));
   }
 
-  function handleRemovePlace() {
+  const handleRemovePlace = useCallback(function handleRemovePlace() {
     setPickedPlaces((prevPickedPlaces) =>
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
-    modal.current.close();
-  }
+    setOpenModal(false);
+
+    const storedItems = JSON.parse(localStorage.getItem('pickedItems')) || [];
+    const updatedStoredItems = storedItems.filter((place) => {
+      return place.id !== selectedPlace.current;
+    })
+    localStorage.setItem('pickedItems', JSON.stringify(updatedStoredItems));
+  }, []);
 
   return (
     <>
-      <Modal ref={modal}>
+      <Modal open={openModal}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
           onConfirm={handleRemovePlace}
