@@ -7,6 +7,7 @@ class Users extends Component {
   constructor() {
     super();
     this.state = {
+      users: [],
       showUsers: true,
     };
   }
@@ -17,10 +18,20 @@ class Users extends Component {
     })
   };
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.users !== this.props.users) {
+      this.setState({users: this.props.users})
+    }
+
+    if (this.props.users.length === 0) {
+      throw new Error('No users found!');
+    }
+  }
+
   render() {
     const usersList = (
       <ul>
-        {this.props.users.map((user) => (
+        {this.state.users.map((user) => (
           <User key={user.id} name={user.name} />
         ))}
       </ul>
