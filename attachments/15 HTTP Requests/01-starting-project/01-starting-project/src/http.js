@@ -33,5 +33,5 @@ export async function fetchUserPlaces() {
     }
 
     const data = await response.json();
-    return data;
+    return data.places;
 }
