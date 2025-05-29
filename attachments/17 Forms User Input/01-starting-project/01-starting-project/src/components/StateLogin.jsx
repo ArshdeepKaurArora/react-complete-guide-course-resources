@@ -18,7 +18,7 @@ export default function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log("Form submitted with data:", formData);
-    // Here you would typically handle the login logic, e.g., API call
+    event.target.reset();
   };
 
   return (

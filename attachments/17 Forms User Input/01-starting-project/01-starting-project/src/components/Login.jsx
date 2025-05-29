@@ -9,7 +9,8 @@ export default function Login() {
     event.preventDefault();
     console.log("Email:", email.current.value);
     console.log("Password:", password.current.value);
-    // Here you would typically handle the login logic, e.g., API call
+    email.current.value = "";
+    password.current.value = "";
   }
 
   return (
