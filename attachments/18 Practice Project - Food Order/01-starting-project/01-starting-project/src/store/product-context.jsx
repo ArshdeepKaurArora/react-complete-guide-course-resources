@@ -10,7 +10,8 @@ export const ProductContext = createContext({
     },
     decreaseItemCount: (id) => {},
     increaseItemCount: (id) => {},
-    removeFromCart: (id) => {}
+    removeFromCart: (id) => {},
+    placeOrder: async (orderData) => {}
 });
 
 export function ProductProvider({children}) {
@@ -91,6 +92,30 @@ export function ProductProvider({children}) {
         addToCart(id, existingItem.name, existingItem.price)
     }
 
+    async function placeOrder(orderData) {
+        const response = await fetch("http://localhost:3000/orders", {
+            method: "POST",
+            body: JSON.stringify(orderData),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        if (!response.ok) {
+            throw new Error("Failed to post order")
+        }
+
+        const data = await response.json();
+
+        setCart({
+            items: [],
+            total: 0,
+            count: 0
+        })
+
+        return data
+    }
+
     return (
         <ProductContext.Provider value={{
             products, 
@@ -98,7 +123,8 @@ export function ProductProvider({children}) {
             cart, 
             decreaseItemCount, 
             increaseItemCount,
-            removeFromCart
+            removeFromCart,
+            placeOrder
         }}>
             {children}
         </ProductContext.Provider>

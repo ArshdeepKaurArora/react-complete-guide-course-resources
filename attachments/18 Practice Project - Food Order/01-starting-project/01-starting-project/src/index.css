@@ -121,6 +121,13 @@ h1 {
   padding: 0;
 }
 
+.cart-empty {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: black;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;

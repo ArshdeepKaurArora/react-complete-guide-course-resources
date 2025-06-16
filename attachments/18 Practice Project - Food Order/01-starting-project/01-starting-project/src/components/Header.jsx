@@ -2,6 +2,7 @@ import React from 'react'
 import logo from '../assets/logo.jpg'
 import { ProductContext } from '../store/product-context'
 import { useContext } from 'react'
+import Button from './Button'
 
 function Header({handleCart}) {
 
@@ -13,7 +14,7 @@ function Header({handleCart}) {
             <img src={logo} alt="logo" />
             <h1>REACTFOOD</h1>
         </div> 
-        <button onClick={handleCart}>Cart ({cart.count})</button>
+        <Button onClick={handleCart}>Cart ({cart.count})</Button>
     </div>
   )
 }
