@@ -1,6 +1,27 @@
 {
   "opinions": [
     {
+      "id": 1749580162685,
+      "votes": 2,
+      "userName": "sample",
+      "title": "new sample",
+      "body": "black lives matter"
+    },
+    {
+      "id": 1749566886067,
+      "votes": 0,
+      "userName": "kaurarshdeep915",
+      "title": "hey there",
+      "body": "Let's test this one"
+    },
+    {
+      "id": 1749566830400,
+      "votes": 0,
+      "userName": "kaurarshdeep915",
+      "title": "Hey testing",
+      "body": "Let's test button"
+    },
+    {
       "id": 1749565857267,
       "votes": 0,
       "userName": "KAURARSHDEEP915",

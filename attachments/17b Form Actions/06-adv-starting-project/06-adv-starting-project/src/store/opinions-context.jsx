@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState, useOptimistic } from 'react';
 
 export const OpinionsContext = createContext({
   opinions: null,
@@ -9,6 +9,28 @@ export const OpinionsContext = createContext({
 
 export function OpinionsContextProvider({ children }) {
   const [opinions, setOpinions] = useState();
+  const [optimisticOpinions, addOptimisticOpinion] = useOptimistic(
+    opinions,
+    (state, { type, id }) => {
+      if (type === 'upvote') {
+        return state.map((opinion) => {
+          if (opinion.id === id) {
+            return { ...opinion, votes: opinion.votes + 1 };
+          }
+          return opinion;
+        });
+      }
+      if (type === 'downvote') {
+        return state.map((opinion) => {
+          if (opinion.id === id) {
+            return { ...opinion, votes: opinion.votes - 1 };
+          }
+          return opinion;
+        });
+      }
+      return state;
+    }
+  );
 
   useEffect(() => {
     async function loadOpinions() {
@@ -37,22 +59,48 @@ export function OpinionsContextProvider({ children }) {
     setOpinions((prevOpinions) => [savedOpinion, ...prevOpinions]);
   }
 
-  function upvoteOpinion(id) {
+  async function upvoteOpinion(id) {
+    // Optimistically update the UI
+    addOptimisticOpinion({ type: 'upvote', id });
+
+    const response = await fetch('http://localhost:3000/opinions/' + id + '/upvote', {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      return;
+    }
+    
+    // Update with the actual server response
+    const updatedOpinion = await response.json();
     setOpinions((prevOpinions) => {
       return prevOpinions.map((opinion) => {
         if (opinion.id === id) {
-          return { ...opinion, votes: opinion.votes + 1 };
+          return updatedOpinion;
         }
         return opinion;
       });
     });
   }
 
-  function downvoteOpinion(id) {
+  async function downvoteOpinion(id) {
+    // Optimistically update the UI
+    addOptimisticOpinion({ type: 'downvote', id });
+
+    const response = await fetch('http://localhost:3000/opinions/' + id + '/downvote', {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      return;
+    }
+
+    // Update with the actual server response
+    const updatedOpinion = await response.json();
     setOpinions((prevOpinions) => {
       return prevOpinions.map((opinion) => {
         if (opinion.id === id) {
-          return { ...opinion, votes: opinion.votes - 1 };
+          return updatedOpinion;
         }
         return opinion;
       });
@@ -60,11 +108,11 @@ export function OpinionsContextProvider({ children }) {
   }
 
   const contextValue = {
-    opinions: opinions,
+    opinions: optimisticOpinions,
     addOpinion,
     upvoteOpinion,
     downvoteOpinion,
   };
 
-  return <OpinionsContext value={contextValue}>{children}</OpinionsContext>;
+  return <OpinionsContext.Provider value={contextValue}>{children}</OpinionsContext.Provider>;
 }
