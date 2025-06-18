@@ -1,58 +1,56 @@
 import React, { forwardRef, useContext, useRef, useImperativeHandle } from 'react'
-import { ProductContext } from '../store/product-context'
+import { ProductContext } from '../store/ProductContext'
 import Button from './Button'
+import { currencyFormatter } from '../util/formatting'
+import Modal from './Modal'
+import { UserProgressContext } from '../store/UserProgressContext'
 
 
-export const Cart = forwardRef(({handleCheckout}, ref) => {
+export const Cart = () => {
 
-    const {cart, decreaseItemCount, increaseItemCount} = useContext(ProductContext)
-    const modalRef = useRef(null)
+    const {items, addItem, removeItem} = useContext(ProductContext)
+    const cartCount = items.reduce((count, item) => count + item.count, 0)
+    const cartTotal = items.reduce((total, item) => total + item.count * item.price, 0)
+    const userProgressCtx = useContext(UserProgressContext)
 
-    useImperativeHandle(ref, () => {
-        return {
-            open: () => {
-                modalRef.current.showModal()
-            }
+    const handleOnClose = () => {
+        if (userProgressCtx.progress === "cart") {
+            userProgressCtx.hideCart()
         }
-    })
-
-    const handleOpenCheckout = () => {
-        modalRef.current.close()
-        handleCheckout()
     }
 
   return (
-    <dialog className='modal' ref={modalRef}>
-        {cart.items.length === 0 && (
+    <Modal className='modal' open={userProgressCtx.progress === "cart"} onClose={handleOnClose}>
+        {cartCount === 0 && (
             <div className='modal-content'>
                 <h2 className='cart-empty'>No items in cart!</h2>
                 <div className='modal-actions'>
-                    <button className='button' onClick={() => modalRef.current.close()}>Close</button>
+                    <Button textOnly onClick={userProgressCtx.hideCart}>Close</Button>
                 </div>
             </div>
         )}
-        {cart.items.length > 0 && (
+        {cartCount > 0 && (
             <>
                 <h2>Your Cart</h2>
                 <ul>
-                    {cart.items.map((item) => (
+                    {items.map((item) => (
                         <li key={item.id} className='cart-item'>
-                            <p>{item.name} - {item.count} x {item.price}</p>
+                            <p>{item.name} - {item.count} x {currencyFormatter(item.price)}</p>
                             <div className='cart-item-actions'>
-                                <button onClick={() => decreaseItemCount(item.id)}>-</button>
+                                <button type='button' onClick={() => removeItem(item.id)}>-</button>
                                 <span>{item.count}</span>
-                                <button onClick={() => increaseItemCount(item.id)}>+</button>
+                                <button type='button' onClick={() => addItem(item)}>+</button>
                             </div>
                         </li>
                     ))}
                 </ul>
-                <p className='cart-total'>Total: {cart.total.toFixed(2)}</p>
+                <p className='cart-total'>Total: {currencyFormatter(cartTotal)}</p>
                 <div className='modal-actions'>
-                    <Button textOnly onClick={() => modalRef.current.close()}>Close</Button>
-                    <Button onClick={handleOpenCheckout}>Go to Checkout</Button>
+                    <Button textOnly onClick={handleOnClose}>Close</Button>
+                    <Button onClick={userProgressCtx.showCheckout}>Go to Checkout</Button>
                 </div>
             </>
         )}
-    </dialog>
+    </Modal>
   )
-})
+}
