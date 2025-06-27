@@ -1,0 +1,31 @@
+.header {
+    width: 100%;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    margin: 2rem 0;
+}
+
+.nav {
+    height: 100%;
+}
+
+.list {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: #f69c36;
+    font-size: 1.5rem;
+}
+
+a:hover,
+a.active {
+    color: #f69c36;
+    text-decoration: underline;
+}
