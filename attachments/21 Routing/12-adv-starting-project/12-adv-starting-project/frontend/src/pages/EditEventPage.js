@@ -8,7 +8,7 @@ const EditEventPage = () => {
   const event = responseData.event;
 
   return (
-    <EventForm event={event}/>
+    <EventForm method='PATCH' event={event}/>
   )
 }
 

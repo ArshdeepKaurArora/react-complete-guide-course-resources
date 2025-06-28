@@ -1,15 +1,15 @@
 import { Form, useActionData, useNavigate, useNavigation } from 'react-router-dom';
 import classes from './EventForm.module.css';
+import { redirect } from 'react-router-dom';
 
 function EventForm({ method, event }) {
   const navigate = useNavigate();
+  const data = useActionData();
+  const status = useNavigation().state;
+
   function cancelHandler() {
     navigate('..');
   }
-
-  const data = useActionData();
-
-  const status = useNavigation().state;
 
   return (
     <Form method={method} className={classes.form}>
@@ -22,19 +22,19 @@ function EventForm({ method, event }) {
       )}
       <p>
         <label htmlFor="title">Title</label>
-        <input id="title" type="text" name="title" defaultValue={event?.title} />
+        <input id="title" type="text" name="title" required defaultValue={event?.title} />
       </p>
       <p>
         <label htmlFor="image">Image</label>
-        <input id="image" type="url" name="image" defaultValue={event?.image} />
+        <input id="image" type="url" name="image" required defaultValue={event?.image} />
       </p>
       <p>
         <label htmlFor="date">Date</label>
-        <input id="date" type="date" name="date" defaultValue={event?.date} />
+        <input id="date" type="date" name="date" required defaultValue={event?.date} />
       </p>
       <p>
         <label htmlFor="description">Description</label>
-        <textarea id="description" name="description" rows="5" defaultValue={event?.description} />
+        <textarea id="description" name="description" rows="5" required defaultValue={event?.description} />
       </p>
       <div className={classes.actions}>
         <button type="button" onClick={cancelHandler}>
@@ -49,3 +49,34 @@ function EventForm({ method, event }) {
 }
 
 export default EventForm;
+
+export const newEventAction = async ({request, params}) => {
+  const data = await request.formData();
+  const eventData = Object.fromEntries(data);
+  const method = request.method;
+
+  let url = 'http://localhost:8080/events';
+
+  if (method === 'PATCH') {
+    const eventId = params.id;
+    url = 'http://localhost:8080/events/' + eventId;
+  }
+  
+  const response = await fetch(url, {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(eventData)
+  });
+
+  if (response.status === 422) {
+    return response;
+  }
+
+  if (!response.ok) {
+    throw new Response(JSON.stringify({ message: 'Failed to save event' }), { status: 500 })
+  }
+
+  return redirect('/events');
+}
