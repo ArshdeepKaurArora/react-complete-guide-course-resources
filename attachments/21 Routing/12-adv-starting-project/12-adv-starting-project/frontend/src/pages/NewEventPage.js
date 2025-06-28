@@ -21,6 +21,11 @@ export const newEventAction = async ({request, params}) => {
     body: JSON.stringify(eventData)
   });
 
+  if (response.status === 422) {
+    console.log(response, "returning response");
+    return response;
+  }
+
   if (!response.ok) {
     throw new Response(JSON.stringify({ message: 'Failed to create event' }), { status: 500 })
   }
