@@ -41,7 +41,9 @@ export async function action({ request }) {
 
   const responseData = await response.json();
   const token = responseData.token;
-  setAuthToken(token);
+  const expiration = new Date();
+  expiration.setHours(expiration.getHours() + 1);
+  setAuthToken(token, expiration.toISOString());
 
   return redirect('/');
 }
