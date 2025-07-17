@@ -3,13 +3,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import Modal from '../UI/Modal.jsx';
 import EventForm from './EventForm.jsx';
 import { useMutation } from '@tanstack/react-query';
-import { createNewEvent } from '../../../../../../../code/24 React Query/07-acting-on-mutation-success-and-invalidating-queries/src/util/http.js';
+import { createNewEvent } from '../util/http.jsx';
+import { queryClient } from '../util/http.jsx';
 
 export default function NewEvent() {
   const navigate = useNavigate();
 
   const {mutate } = useMutation({
     mutationFn: createNewEvent,
+    onSuccess: () => {
+      navigate("/events")
+      queryClient.invalidateQueries({ queryKey: ["events"]})
+    }
   })
 
   function handleSubmit(formData) {

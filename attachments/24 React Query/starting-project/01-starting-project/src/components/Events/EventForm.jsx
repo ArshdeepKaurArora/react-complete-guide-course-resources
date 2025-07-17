@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import ImagePicker from '../ImagePicker.jsx';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { fetchSelectableImages } from '../../../../../../../code/24 React Query/07-acting-on-mutation-success-and-invalidating-queries/src/util/http.js';
+import { useQuery } from '@tanstack/react-query';
+import { fetchSelectableImages } from '../util/http.jsx';
 import ErrorBlock from '../UI/ErrorBlock.jsx';
 
 export default function EventForm({ inputData, onSubmit, children }) {
