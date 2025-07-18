@@ -93,13 +93,13 @@ export const fetchEvent = async({id}) => {
     return event;
 }
 
-export const editEvent = async({id, formData}) => {
+export const editEvent = async({id, updatedEvent}) => {
     const response = await fetch(`http://localhost:3000/events/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({event: formData})
+        body: JSON.stringify({event: updatedEvent})
     });
     
     if (!response.ok) {
